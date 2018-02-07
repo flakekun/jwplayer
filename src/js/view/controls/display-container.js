@@ -1,22 +1,35 @@
 import displayContainerTemplate from 'view/controls/templates/display-container';
+import RewindDisplayIcon from 'view/controls/rewind-display-icon';
+import PlayDisplayIcon from 'view/controls/play-display-icon';
+import NextDisplayIcon from 'view/controls/next-display-icon';
+import { cloneIcons } from 'view/controls/icons';
+import utils from 'utils/helpers';
 
-define([
-    'utils/helpers',
-], function(utils) {
+export default class DisplayContainer {
+    constructor(model, api) {
+        this.el = utils.createElement(displayContainerTemplate(model.get('localization')));
 
-    return class DisplayContainer {
-        constructor() {
-            this.el = utils.createElement(displayContainerTemplate());
-            this.container = this.el.querySelector('.jw-display-controls');
-        }
+        const container = this.el.querySelector('.jw-display-controls');
+        const buttons = {};
 
-        addButton(button) {
-            this.container.appendChild(button.el);
-        }
+        addButton('rewind', cloneIcons('rewind'), RewindDisplayIcon, container, buttons, model, api);
+        addButton('display', cloneIcons('play,pause,buffer,replay'), PlayDisplayIcon, container, buttons, model, api);
+        addButton('next', cloneIcons('next'), NextDisplayIcon, container, buttons, model, api);
 
-        element() {
-            return this.el;
-        }
-    };
+        this.container = container;
+        this.buttons = buttons;
+    }
 
-});
+    element() {
+        return this.el;
+    }
+}
+
+function addButton(name, iconElements, ButtonClass, container, buttons, model, api) {
+    const buttonElement = container.querySelector(`.jw-display-icon-${name}`);
+    const iconContainer = container.querySelector(`.jw-icon-${name}`);
+    iconElements.forEach(icon => {
+        iconContainer.appendChild(icon); 
+    });
+    buttons[name] = new ButtonClass(model, api, buttonElement);
+}

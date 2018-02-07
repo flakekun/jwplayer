@@ -1,13 +1,21 @@
 import Config from 'api/config';
-import _ from 'underscore';
 
 describe('API Config', function() {
 
-    const props = ['width', 'height', 'base'];
+    const props = [
+        'autostart',
+        'base',
+        'controls',
+        'playlist',
+        'playbackRate',
+        'qualityLabels',
+        'width',
+        'height',
+    ];
 
     describe('init', function() {
 
-        it('should use default config for invalid options', function () {
+        it('should use default config for invalid options', function() {
             const defaultConfig = new Config();
 
             expect(new Config(undefined), 'options=undefined').to.deep.equal(defaultConfig);
@@ -15,37 +23,34 @@ describe('API Config', function() {
             expect(new Config(true), 'options=true').to.deep.equal(defaultConfig);
             expect(new Config(false), 'options=false').to.deep.equal(defaultConfig);
         });
+
+        it('should deserialize string properties, except for "id"', function() {
+            expect(new Config({ volume: '42' })).to.have.property('volume').which.is.a('number').which.equals(42);
+            expect(new Config({ controls: 'true' })).to.have.property('controls').which.equals(true);
+            expect(new Config({ id: 'abc' })).to.have.property('id').which.is.a('string').which.equals('abc');
+            expect(new Config({ id: '123' })).to.have.property('id').which.is.a('string').which.equals('123');
+        });
     });
 
     describe('aspect ratio/width', function() {
 
-        function isNumber(val) {
-            if (val.slice && val.slice(-1) === '%') {
-                val = val.slice(0, -1);
-            }
-
-            return !_.isNaN(val);
-        }
-
         function testConfig(obj) {
             const x = new Config(obj);
 
-            expect(isNumber(x.width), 'width is a number ' + x.width).to.be.true;
-            expect(isNumber(x.height), 'height is a number ' + x.height).to.be.true;
-            _.each(props, function (a) {
-                expect(_.has(x, a), 'Config has ' + a + ' attribute').to.be.true;
+            props.forEach(function (key) {
+                expect(x, `Config has ${key} attribute`).to.have.property(key);
             });
             return x;
         }
 
-        it('should have default width of 640 and height of 360', function () {
+        it('should have default width of 640 and height of 360', function() {
             const x = testConfig();
 
             expect(x.width).to.equal(640);
             expect(x.height).to.equal(360);
         });
 
-        it('should accept widths in different formats', function () {
+        it('should accept widths in different formats', function() {
             let x = testConfig({ width: '100px' });
             expect(x.width, 'pixel').to.equal('100');
 
@@ -59,7 +64,7 @@ describe('API Config', function() {
             expect(x.width, 'integer').to.equal(100);
         });
 
-        it('should accept aspectratio in percentage and W:H formats', function () {
+        it('should accept aspectratio in percentage and W:H formats', function() {
             let x = testConfig({ width: '10%', aspectratio: '4:3' });
 
             expect(x.aspectratio).to.equal('75%'); // 4:3 is 75% because of 3/4
@@ -71,23 +76,26 @@ describe('API Config', function() {
             expect(x.aspectratio).to.equal('75%');
 
             x = testConfig({ width: '200', aspectratio: '4:3' });
-            expect(x.aspectratio).to.be.undefined;
+            expect(x, 'with fixed widths, aspectratio is ignored')
+                .to.not.have.property('aspectratio');
+            expect(x, 'with fixed widths, aspectratio is ignored, and default height is used')
+                .to.have.property('height').which.equals(360);
 
             // aspectratio could be a string too since we "deserialize" numbers and bools < 6 chars in length
             x = testConfig({ width: '100%', aspectratio: 1.2 });
-            expect(x.aspectratio).to.be.undefined;
+            expect(x).to.not.have.property('aspectratio');
 
             x = testConfig({ width: '100%', aspectratio: 'foo' });
-            expect(x.aspectratio).to.be.undefined;
+            expect(x).to.not.have.property('aspectratio');
 
             x = testConfig({ width: '100%', aspectratio: ':0' });
-            expect(x.aspectratio).to.be.undefined;
+            expect(x).to.not.have.property('aspectratio');
         });
     });
 
     describe('playlist', function() {
 
-        it('should accept playlist values in different formats', function () {
+        it('should accept playlist values in different formats', function() {
             let x = new Config({ playlist: 'urlToLoad' });
             expect(x.playlist).to.equal('urlToLoad');
 
@@ -103,44 +111,13 @@ describe('API Config', function() {
             let apiConfig;
 
             apiConfig = new Config({});
-            expect(/.*\//.test(apiConfig.base)).to.be.true;
+            expect(/.*\//.test(apiConfig.base)).to.equal(true);
 
             apiConfig = new Config({ base: '.' });
-            expect(/.*\//.test(apiConfig.base)).to.be.true;
+            expect(/.*\//.test(apiConfig.base)).to.equal(true);
 
             apiConfig = new Config({ base: CUSTOM_BASE });
             expect(apiConfig.base).to.equal(CUSTOM_BASE);
-        });
-    });
-
-    describe('skin', function() {
-
-        it('should flatten skin object', function() {
-            const skinObject = {
-                name: 'foo',
-                url: 'skin/url',
-                inactive: '#888888',
-                active: '#FFFFFF',
-                background: '#000000'
-            };
-
-            let x = new Config({ skin: skinObject });
-            expect(x.skinUrl).to.equal(skinObject.url);
-            expect(x.skinColorInactive).to.equal(skinObject.inactive);
-            expect(x.skinColorActive).to.equal(skinObject.active);
-            expect(x.skinColorBackground, skinObject.background);
-            expect(x.skin).to.equal(skinObject.name);
-
-            x = new Config({ skin: {} });
-            expect(x.skin).to.equal('seven');
-        });
-
-        it('should remove ".xml" from skin param', function() {
-            let x = new Config({ skin: 'six.xml' });
-            expect(x.skin).to.equal('six');
-
-            x = new Config({});
-            expect(x.skin).to.equal('seven');
         });
     });
 });

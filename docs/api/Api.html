@@ -175,7 +175,9 @@ Creates an instance of the player.</p>
 
     
 
-     
+    
+
+    
 
     
 
@@ -781,7 +783,7 @@ Used by plugins.</p>
 
 
 <div class="description">
-    <p>Adds or updates a button in the player's dock. The button is only displayed when controls are active.</p>
+    <p>Adds or updates a button in the player's control bar. The button is only displayed when controls are active.</p>
 </div>
 
 
@@ -843,7 +845,8 @@ Used by plugins.</p>
 
             
 
-            <td class="description last"><p>An image URL to use as the button icon.</p></td>
+            <td class="description last"><p>The image that will be used as the button icon.
+            Can be the url to an image or the content of an SVG in string.</p></td>
         </tr>
 
     
@@ -1504,85 +1507,6 @@ Does not affect the Chromecast button in Chrome.</p>
     <p>Detaches a player instance from it's underlying video tag.
 Used to stop recording state changes before an ad break begins.</p>
 </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-        <dt class="important tag-deprecated">Deprecated:</dt><dd><ul class="dummy"><li><p>TODO: in version 8.0.0-0</p></li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="dispatchEvent"><span class="type-signature"></span>dispatchEvent<span class="signature">()</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
 
 
 
@@ -2869,6 +2793,109 @@ DVR streams return a negative value, indicating how far back playback is from th
     
 
     
+    <h4 class="name" id="getEnvironment"><span class="type-signature"></span>getEnvironment<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="global.html#Environment">Environment</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Gets information about the current session's environment</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>An object detailing the current session's browser, operating system, and supported features.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="global.html#Environment">Environment</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
     <h4 class="name" id="getFullscreen"><span class="type-signature"></span>getFullscreen<span class="signature">()</span><span class="type-signature"> &rarr; {boolean}</span></h4>
     
 
@@ -3075,89 +3102,6 @@ DVR streams return a negative value, indicating how far back playback is from th
     
 
     
-    <h4 class="name" id="getItem"><span class="type-signature"></span>getItem<span class="signature">()</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    <p>Alias of <code>getPlaylistIndex()</code></p>
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-        <dt class="important tag-deprecated">Deprecated:</dt><dd><ul class="dummy"><li><p>TODO: in version 8.0.0-0</p></li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-            
-
-    
-
-    
     <h4 class="name" id="getItemMeta"><span class="type-signature"></span>getItemMeta<span class="signature">()</span><span class="type-signature"> &rarr; {object}</span></h4>
     
 
@@ -3246,89 +3190,6 @@ DVR streams return a negative value, indicating how far back playback is from th
 </dl>
 
     
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="getMeta"><span class="type-signature"></span>getMeta<span class="signature">()</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    <p>Alias of <code>getItemMeta()</code></p>
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-        <dt class="important tag-deprecated">Deprecated:</dt><dd><ul class="dummy"><li><p>TODO: in version 8.0.0-0</p></li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -4363,85 +4224,6 @@ DVR streams return a negative value, indicating how far playback is from the liv
 </dl>
 
     
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="getRenderingMode"><span class="type-signature"></span>getRenderingMode<span class="signature">()</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-        <dt class="important tag-deprecated">Deprecated:</dt><dd><ul class="dummy"><li><p>since version 7.0. TODO: remove in 8.0.0-0</p></li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -6215,85 +5997,6 @@ The next up item is the next playlist item, or the first recommended video when 
     
 
     
-    <h4 class="name" id="onBuffer"><span class="type-signature"></span>onBuffer<span class="signature">()</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-        <dt class="important tag-deprecated">Deprecated:</dt><dd><ul class="dummy"><li><p>TODO: in version 8.0.0-0</p></li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-            
-
-    
-
-    
     <h4 class="name" id="once"><span class="type-signature"></span>once<span class="signature">(name, callback, context<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="Api.html">Api</a>}</span></h4>
     
 
@@ -6517,7 +6220,7 @@ The listener is removed after the first call.</p>
     
 
     
-    <h4 class="name" id="pause"><span class="type-signature"></span>pause<span class="signature">(state<span class="signature-attributes">opt</span>, meta<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="Api.html">Api</a>}</span></h4>
+    <h4 class="name" id="pause"><span class="type-signature"></span>pause<span class="signature">(meta<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="Api.html">Api</a>}</span></h4>
     
 
     
@@ -6525,7 +6228,7 @@ The listener is removed after the first call.</p>
 
 
 <div class="description">
-    <p>Toggles or pauses playback.</p>
+    <p>Pauses playback.</p>
 </div>
 
 
@@ -6559,39 +6262,6 @@ The listener is removed after the first call.</p>
     </thead>
 
     <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>state</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">boolean</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>An optional argument that indicates whether to pause (true) or play (false).</p></td>
-        </tr>
-
     
 
         <tr>
@@ -6840,7 +6510,7 @@ The listener is removed after the first call.</p>
     
 
     
-    <h4 class="name" id="play"><span class="type-signature"></span>play<span class="signature">(state<span class="signature-attributes">opt</span>, meta<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="Api.html">Api</a>}</span></h4>
+    <h4 class="name" id="play"><span class="type-signature"></span>play<span class="signature">(meta<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="Api.html">Api</a>}</span></h4>
     
 
     
@@ -6848,7 +6518,7 @@ The listener is removed after the first call.</p>
 
 
 <div class="description">
-    <p>Toggles or un-pauses playback.</p>
+    <p>Starts playback.</p>
 </div>
 
 
@@ -6882,39 +6552,6 @@ The listener is removed after the first call.</p>
     </thead>
 
     <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>state</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">boolean</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>An optional argument that indicates whether to play (true) or pause (false).</p></td>
-        </tr>
-
     
 
         <tr>
@@ -7665,6 +7302,166 @@ When the player is at the beginning of the playlist, this will play the last pla
     
 
     
+    <h4 class="name" id="playToggle"><span class="type-signature"></span>playToggle<span class="signature">(meta<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="Api.html">Api</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Toggles playback between play and pause.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>meta</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>An optional argument used to specify cause.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Api.html">Api</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
     <h4 class="name" id="qoe"><span class="type-signature"></span>qoe<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="global.html#PlayerQoE">PlayerQoE</a>}</span></h4>
     
 
@@ -7764,7 +7561,7 @@ When the player is at the beginning of the playlist, this will play the last pla
     
 
     
-    <h4 class="name" id="registerPlugin"><span class="type-signature"></span>registerPlugin<span class="signature">(name, minimumVersion, pluginClass, pluginClass2<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="registerPlugin"><span class="type-signature"></span>registerPlugin<span class="signature">(name, minimumVersion, pluginClass)</span><span class="type-signature"></span></h4>
     
 
     
@@ -7796,8 +7593,6 @@ When the player is at the beginning of the playlist, this will play the last pla
         <th>Type</th>
 
         
-        <th>Attributes</th>
-        
 
         
 
@@ -7823,14 +7618,6 @@ When the player is at the beginning of the playlist, this will play the last pla
             </td>
 
             
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
 
             
 
@@ -7853,14 +7640,6 @@ When the player is at the beginning of the playlist, this will play the last pla
             
             </td>
 
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
             
 
             
@@ -7885,51 +7664,10 @@ When the player is at the beginning of the playlist, this will play the last pla
             </td>
 
             
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
 
             
 
             <td class="description last"><p>The plugin function or class to instantiate with new player instances.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>pluginClass2</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">function</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>(TODO: remove in 8.0.0) When passed in, the previous argument is a path to the flash plugin and this argument is the JS contructor.</p></td>
         </tr>
 
     
@@ -8109,7 +7847,7 @@ All event listeners attached to the player are removed.</p>
 
 
 <div class="description">
-    <p>Removes a button from the player's dock.</p>
+    <p>Removes a button from the player's control bar.</p>
 </div>
 
 
@@ -8238,85 +7976,6 @@ All event listeners attached to the player are removed.</p>
 </dl>
 
     
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="removeEventListener"><span class="type-signature"></span>removeEventListener<span class="signature">()</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-        <dt class="important tag-deprecated">Deprecated:</dt><dd><ul class="dummy"><li><p>TODO: in version 8.0.0-0</p></li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -10862,89 +10521,6 @@ To disable this safety measure set <code>jwplayer.debug</code> to <code>true</co
 
 
         
-            
-
-    
-
-    
-    <h4 class="name" id="triggerSafe"><span class="type-signature"></span>triggerSafe<span class="signature">()</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    <p>Triggers an event callback inside a try catch block.</p>
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-        <dt class="important tag-deprecated">Deprecated:</dt><dd><ul class="dummy"><li><p>TODO: in version 8.0.0-0</p></li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
     
 
     
@@ -10966,7 +10542,7 @@ To disable this safety measure set <code>jwplayer.debug</code> to <code>true</co
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.1</a>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a>
 </footer>
 
 <script> prettyPrint(); </script>

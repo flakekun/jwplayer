@@ -1,189 +1,142 @@
-import ApiQueueDecorator from './api-queue';
-import Config from './config';
-import Storage from '../model/storage';
-import SimpleModel from '../model/simplemodel';
-import { playerDefaults } from '../model/player-model';
-import Timer from 'api/timer';
-import Events from 'utils/backbone.events';
+import Item from 'playlist/item';
+import ProvidersSupported from 'providers/providers-supported';
+import registerProvider from 'providers/providers-register';
+import { module as ControlsModule } from 'controller/controls-loader';
+import { resolved } from 'polyfills/promise';
 
-let controllerPromise = null;
+let bundlePromise = null;
 
-function loadController() {
-    if (!controllerPromise) {
-        controllerPromise = new Promise(function (resolve) {
-            require.ensure(['controller/controller'], function (require) {
-                const CoreMixin = require('controller/controller');
-                resolve(CoreMixin);
-            }, 'jwplayer.core');
-        });
+export const bundleContainsProviders = {};
+
+export default function loadCoreBundle(model) {
+    if (!bundlePromise) {
+        bundlePromise = selectBundle(model);
     }
-    return controllerPromise;
+    return bundlePromise;
 }
 
-const CoreModel = function() {};
-Object.assign(CoreModel.prototype, SimpleModel);
+export function chunkLoadErrorHandler(/* error */) {
+    // Webpack require.ensure error: "Loading chunk 3 failed"
+    throw new Error('Network error');
+}
 
-const CoreLoader = function CoreSetup(originalContainer) {
-    loadController();
-    this._events = {};
-    this.controller = null;
-    this.model = new CoreModel();
-    this.model._qoeItem = new Timer();
-    this.originalContainer = originalContainer;
-    this.apiQueue = new ApiQueueDecorator(this, [
-        // These commands require a provider instance to be available
-        'load',
-        'play',
-        'pause',
-        'seek',
-        'stop',
-        'playlistItem',
-        'playlistNext',
-        'playlistPrev',
-        'next',
+export function selectBundle(model) {
+    const controls = model.get('controls');
+    const polyfills = requiresPolyfills();
+    const html5Provider = requiresProvider(model, 'html5');
 
-        // These should just update state that could be acted on later, but need to be queued given v7 model
-        'setConfig',
-        'setCurrentAudioTrack',
-        'setCurrentCaptions',
-        'setCurrentQuality',
-        'setFullscreen',
-        'addButton',
-        'removeButton',
-        'castToggle',
-        'setMute',
-        'setVolume',
-        'setPlaybackRate',
-
-        // These commands require the view instance to be available
-        'resize',
-        'setCaptions',
-        'setControls',
-        'setCues',
-    ], () => true);
-};
-
-Object.assign(CoreLoader.prototype, {
-    on: Events.on,
-    once: Events.once,
-    off: Events.off,
-    trigger: Events.trigger,
-    init(options, api) {
-
-        const storage = new Storage('jwplayer', [
-            'volume',
-            'mute',
-            'captionLabel',
-            'qualityLabel'
-        ]);
-        const persisted = storage && storage.getAllItems();
-        this.model.attributes = this.model.attributes || {};
-        Object.assign(this.model.attributes, new Config(options, persisted), playerDefaults);
-
-        loadController().then(CoreMixin => {
-            if (!this.apiQueue) {
-                // Exit if `playerDestroy` was called on CoreLoader clearing the config
-                return;
-            }
-            const config = this.model.clone();
-            // copy queued commands
-            const commandQueue = this.apiQueue.queue.slice(0);
-            this.apiQueue.destroy();
-            // Assign CoreMixin.prototype (formerly controller) properties to this instance making api.core the controller
-            Object.assign(this, CoreMixin.prototype);
-            this.setup(config, api, this.originalContainer, this._events, commandQueue);
-            storage.track(this._model);
-        });
-    },
-    playerDestroy() {
-        // TODO: cancel async setup
-        if (this.apiQueue) {
-            this.apiQueue.destroy();
-        }
-        this._events =
-            this.apiQueue =
-            this.originalContainer =
-            this.model =
-            this.controller = null;
-    },
-    getContainer() {
-        return this.originalContainer;
-    },
-
-    // These methods read from the model
-    get(property) {
-        return this.model.get(property);
-    },
-    getItemQoe() {
-        return this.model._qoeItem;
-    },
-    getConfig() {
-        return Object.assign({}, this.model.attributes);
-    },
-    getCurrentCaptions() {
-        return this.get('captionsIndex');
-    },
-    getWidth() {
-        return this.get('containerWidth');
-    },
-    getHeight() {
-        return this.get('containerHeight');
-    },
-    getMute() {
-        return this.get('mute');
-    },
-    getProvider() {
-        return this.get('provider');
-    },
-    getState() {
-        return this.get('state');
-    },
-
-    // These methods require a provider
-    getAudioTracks() {
-        return null;
-    },
-    getCaptionsList() {
-        return null;
-    },
-    getQualityLevels() {
-        return null;
-    },
-    getVisualQuality() {
-        return null;
-    },
-    getCurrentQuality() {
-        return -1;
-    },
-    getCurrentAudioTrack() {
-        return -1;
-    },
-
-    // These methods require the view
-    getSafeRegion(/* excludeControlbar */) {
-        return {
-            x: 0,
-            y: 0,
-            width: 0,
-            height: 0
-        };
-    },
-
-    // Ads specific
-    isBeforeComplete() {
-        return false;
-    },
-    isBeforePlay() {
-        return false;
-    },
-    createInstream() {
-        return null;
-    },
-    skipAd() {},
-    attachMedia() {},
-    detachMedia() {
-        return null; // video tag;
+    if (controls && polyfills && html5Provider) {
+        return loadControlsPolyfillHtml5Bundle();
     }
-});
+    if (controls && html5Provider) {
+        return loadControlsHtml5Bundle();
+    }
+    if (controls && polyfills) {
+        return loadControlsPolyfillBundle();
+    }
+    if (controls) {
+        return loadControlsBundle();
+    }
+    return loadCore();
+}
 
-export default CoreLoader;
+export function requiresPolyfills() {
+    const IntersectionObserverEntry = window.IntersectionObserverEntry;
+    return !IntersectionObserverEntry ||
+        !('IntersectionObserver' in window) ||
+        !('intersectionRatio' in IntersectionObserverEntry.prototype);
+}
+
+export function requiresProvider(model, providerName) {
+    const playlist = model.get('playlist');
+    if (Array.isArray(playlist) && playlist.length) {
+        const sources = Item(playlist[0]).sources;
+        for (let i = 0; i < sources.length; i++) {
+            const source = sources[i];
+            const providersManager = model.getProviders();
+            for (let j = 0; j < ProvidersSupported.length; j++) {
+                const provider = ProvidersSupported[j];
+                if (providersManager.providerSupports(provider, source)) {
+                    return (provider.name === providerName);
+                }
+            }
+        }
+    }
+    return false;
+}
+
+function loadControlsPolyfillHtml5Bundle() {
+    bundleContainsProviders.html5 = true;
+    return require.ensure([
+        'controller/controller',
+        'view/controls/controls',
+        'intersection-observer',
+        'providers/html5'
+    ], function (require) {
+        // These modules should be required in this order
+        require('intersection-observer');
+        const CoreMixin = require('controller/controller').default;
+        ControlsModule.controls = require('view/controls/controls').default;
+        registerProvider(require('providers/html5').default);
+        return CoreMixin;
+    }, chunkLoadErrorHandler, 'jwplayer.core.controls.polyfills.html5');
+}
+
+function loadControlsHtml5Bundle() {
+    bundleContainsProviders.html5 = true;
+    return require.ensure([
+        'controller/controller',
+        'view/controls/controls',
+        'providers/html5'
+    ], function (require) {
+        const CoreMixin = require('controller/controller').default;
+        ControlsModule.controls = require('view/controls/controls').default;
+        registerProvider(require('providers/html5').default);
+        return CoreMixin;
+    }, chunkLoadErrorHandler, 'jwplayer.core.controls.html5');
+}
+
+function loadControlsPolyfillBundle() {
+    return require.ensure([
+        'controller/controller',
+        'view/controls/controls',
+        'intersection-observer'
+    ], function (require) {
+        require('intersection-observer');
+        const CoreMixin = require('controller/controller').default;
+        ControlsModule.controls = require('view/controls/controls').default;
+        return CoreMixin;
+    }, chunkLoadErrorHandler, 'jwplayer.core.controls.polyfills');
+}
+
+function loadControlsBundle() {
+    return require.ensure([
+        'controller/controller',
+        'view/controls/controls'
+    ], function (require) {
+        const CoreMixin = require('controller/controller').default;
+        ControlsModule.controls = require('view/controls/controls').default;
+        return CoreMixin;
+    }, chunkLoadErrorHandler, 'jwplayer.core.controls');
+}
+
+function loadCore() {
+    return loadIntersectionObserverIfNeeded().then(() => {
+        return require.ensure([
+            'controller/controller'
+        ], function (require) {
+            return require('controller/controller').default;
+        }, chunkLoadErrorHandler, 'jwplayer.core');
+    });
+}
+
+function loadIntersectionObserverIfNeeded() {
+    if (requiresPolyfills()) {
+        return require.ensure([
+            'intersection-observer'
+        ], function (require) {
+            return require('intersection-observer');
+        }, chunkLoadErrorHandler, 'polyfills.intersection-observer');
+    }
+    return resolved;
+}

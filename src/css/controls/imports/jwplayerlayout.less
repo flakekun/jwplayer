@@ -1,43 +1,30 @@
 @import "icons";
+@import "tooltip";
+
+.jw-overlays,
+.jw-controls {
+    &:extend(._stretch, ._topleft, ._bottomright);
+    pointer-events: none; // Allow pointer events through to the provider
+}
+
+.jw-controls-backdrop {
+    &:extend(._stretch, ._topleft);
+    display: block;
+    background: linear-gradient(to bottom, transparent, fade(@black, 40%) 77%, fade(@black, 40%) 100%) 100% 100% / 100% 240px no-repeat transparent;
+    transition: opacity 250ms @default-timing-function, background-size 250ms @default-timing-function;
+    pointer-events: none;
+}
 
 .jw-overlays {
     cursor: auto;
-    /* Allow pointer events through to the provider */
-    pointer-events: none;
 }
 
 .jw-controls {
     overflow: hidden;
-    /* Allow pointer events through to the provider */
-    pointer-events: none;
 
-    .jw-controls-right {
-        position: absolute;
-        top: 0;
-        right: 0;
-        left: 0;
-        /* this should be adjusted in different skins based on controlbar height */
-        bottom: @controlbar-height;
+    .jw-flag-small-player & {
+        text-align: center;
     }
-}
-
-.jw-overlays,
-.jw-controls {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-}
-
-.jw-flag-small-player .jw-controls {
-    text-align: center;
-}
-
-.jw-icon-playback {
-    .jw-icon-play;
 }
 
 .jw-text {
@@ -46,24 +33,19 @@
     font-size: @font-size;
     font-style: normal;
     font-weight: normal;
-    color: #fff;
+    color: @white;
     text-align: center;
     font-variant: normal;
     font-stretch: normal;
 }
 
 /* These items can intercept pointer-events */
-.jw-dock .jw-dock-button,
 .jw-controlbar,
 .jw-skip,
 .jw-display-icon-container,
 .jw-display-icon-container .jw-icon,
 .jw-nextup-container,
-.jw-autostart-mute {
-    pointer-events: all;
-}
-
-/* These items can intercept pointer-events */
+.jw-autostart-mute,
 .jw-overlays .jw-plugin {
     pointer-events: all;
 }

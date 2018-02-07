@@ -1,90 +1,133 @@
-define([
-    'utils/strings'
-], function (strings) {
+import {
+    pad,
+    extension,
+    seconds,
+    offsetToSeconds,
+    hms,
+    prefix,
+    suffix
+} from 'utils/strings';
 
-    describe('strings', function() {
+describe('strings', function() {
 
-        it('strings.pad', function() {
-            var str = strings.pad('test', 7, '1');
-            assert.equal(str, '111test', 'strings padding correctly done');
+    it('pad', function() {
+        var str = pad('test', 7, '1');
+        expect(str, 'strings padding correctly done').to.equal('111test');
 
-            str = strings.pad('test', 3, '1');
-            assert.equal(str, 'test', 'strings padding with smaller length than str should not pad anything');
-        });
+        str = pad('test', 3, '1');
+        expect(str, 'strings padding with smaller length than str should not pad anything').to.equal('test');
+    });
 
-        it('strings.extension', function() {
-            var ext = strings.extension('invalid');
-            assert.strictEqual(ext, undefined, 'invalid path extension returns undefined');
+    it('extension', function() {
+        var ext = extension('invalid');
+        expect(ext, 'invalid path extension returns undefined').to.equal(undefined);
 
-            ext = strings.extension(null);
-            assert.strictEqual(ext, '', 'null path extension');
+        ext = extension(null);
+        expect(ext, 'null path extension').to.equal('');
 
-            ext = strings.extension('Manifest(format=m3u8-aapl-v3)"');
-            assert.equal(ext, 'm3u8', 'Azure file extension master');
+        ext = extension('Manifest(format=m3u8-aapl-v3)"');
+        expect(ext, 'Azure file extension master').to.equal('m3u8');
 
-            ext = strings.extension('/Manifest(video,format=m3u8-aapl-v3,audiotrack=audio)');
-            assert.equal(ext, 'm3u8', 'Azure file extension playlist');
+        ext = extension('/Manifest(video,format=m3u8-aapl-v3,audiotrack=audio)');
+        expect(ext, 'Azure file extension playlist').to.equal('m3u8');
 
-            ext = strings.extension('hello.jpg');
-            assert.equal(ext, 'jpg', 'extension correctly received');
+        ext = extension('hello.jpg');
+        expect(ext, 'extension correctly received').to.equal('jpg');
 
-            // akamai url's
-            ext = strings.extension('https://akamaihd.net/i/2013/01/20131114_56c3456df2b9b_vg01/,480_270_500,.mp4.csmil/master.m3u8?hdnea=st=145747587700~exp=645456~acl=/*~hmac=34523452345sdfggdfssd345345');
-            assert.equal(ext, 'm3u8', 'Akamai Tokenized Url\'s');
+        // akamai url's
+        ext = extension('https://akamaihd.net/i/2013/01/20131114_56c3456df2b9b_vg01/,480_270_500,.mp4.csmil/master.m3u8?hdnea=st=145747587700~exp=645456~acl=/*~hmac=34523452345sdfggdfssd345345');
+        expect(ext, 'Akamai Tokenized Url\'s').to.equal('m3u8');
 
-            ext = strings.extension('https://domain.net/master.m3u8?dot=.');
-            assert.equal(ext, 'm3u8', 'Dot in the search param');
+        ext = extension('https://domain.net/master.m3u8?dot=.');
+        expect(ext, 'Dot in the search param').to.equal('m3u8');
 
-            ext = strings.extension('https://domain.net/master.file.m3u8?dot=.#id.1');
-            assert.equal(ext, 'm3u8', 'Dot in the search and hash portions of the url');
-        });
+        ext = extension('https://domain.net/master.file.m3u8?dot=.#id.1');
+        expect(ext, 'Dot in the search and hash portions of the url').to.equal('m3u8');
+    });
 
-        it('strings.seconds', function() {
-            var sec = strings.seconds(5);
-            assert.equal(sec, 5, 'number input returns input');
+    it('seconds', function() {
+        timeConversionTest(seconds);
+    });
 
-            sec = strings.seconds('5s');
-            assert.equal(sec, 5, 'seconds input returns seconds');
+    it('offsetToSeconds', function () {
+        timeConversionTest(offsetToSeconds);
 
-            sec = strings.seconds('5m');
-            assert.equal(sec, 300, 'minutes input returns seconds');
+        let sec = offsetToSeconds('50%', 100);
+        expect(sec, 'percentage and duration inputs return seconds').to.equal(50);
 
-            sec = strings.seconds('1h');
-            assert.equal(sec, 3600, 'hours input returns seconds');
+        sec = offsetToSeconds('25%');
+        expect(sec, 'percentage without duration returns null').to.equal(null);
 
-            sec = strings.seconds('5');
-            assert.equal(sec, 5, 'string number input returns number');
+        sec = offsetToSeconds('25%', 0);
+        expect(sec, 'percentage with duration of 0 returns null').to.equal(null);
 
-            sec = strings.seconds('1:01');
-            assert.equal(sec, 61, 'minute seconds input returns seconds');
+        sec = offsetToSeconds('25%', 'abc');
+        expect(sec, 'percentage with NaN duration returns null').to.equal(null);
 
-            sec = strings.seconds('01:01:01.111');
-            assert.equal(sec, 3661.111, 'hours minute seconds milliseconds input returns seconds');
+        sec = offsetToSeconds('50', 100);
+        expect(sec, 'non-percentage numeric string with duration inputs return seconds').to.equal(50);
 
-            sec = strings.seconds('00:00:01:15');
-            assert.equal(sec, 1, 'hours minute seconds frames input without frameRate returns seconds without frames');
+        sec = offsetToSeconds(null, 100);
+        expect(sec, 'null and duration inputs return 0').to.equal(0);
 
-            sec = strings.seconds('00:01:01:25', 50);
-            assert.equal(sec, 61.5, 'hours minute seconds frames input with frameRate returns seconds');
-        });
+        sec = offsetToSeconds(undefined, 100);
+        expect(sec, 'undefined and duration inputs return 0').to.equal(0);
 
-        it('strings.hms', function() {
-            var str = strings.hms(3661);
-            assert.equal(str, '01:01:01.000', 'hms gives correct time string format');
+        sec = offsetToSeconds('', 100);
+        expect(sec, 'empty string and duration inputs return 0').to.equal(0);
 
-            str = strings.hms(1.11111);
-            assert.equal(str, '00:00:01.111', 'hms gives milliseconds rounded to 3dp');
-        });
+        sec = offsetToSeconds('abc', 100);
+        expect(sec, 'alpha only strings and duration inputs return 0').to.equal(0);
+    });
 
-        it('strings.prefix', function() {
-            var prefix = strings.prefix(['1', '2'], '0');
-            assert.equal(prefix[0], '01', 'prefix with 0 index correct');
-            assert.equal(prefix[1], '02', 'prefix with 1 index correct');
+    function timeConversionTest(converter) {
+        let sec = converter(5);
+        expect(sec, 'number input returns input').to.equal(5);
 
-            var suffix = strings.suffix(['1', '2'], '0');
-            assert.equal(suffix[0], '10', 'prefix suffix 0 index correct');
-            assert.equal(suffix[1], '20', 'prefix suffix 1 index correct');
-        });
+        sec = converter('5s');
+        expect(sec, 'seconds input returns seconds').to.equal(5);
 
+        sec = converter('5m');
+        expect(sec, 'minutes input returns seconds').to.equal(300);
+
+        sec = converter('1h');
+        expect(sec, 'hours input returns seconds').to.equal(3600);
+
+        sec = converter('5');
+        expect(sec, 'string number input returns number').to.equal(5);
+
+        sec = converter('1:01');
+        expect(sec, 'minute seconds input returns seconds').to.equal(61);
+
+        sec = converter('01:01:01.111');
+        expect(sec, 'hours minute seconds milliseconds input returns seconds').to.equal(3661.111);
+
+        sec = converter('00:00:01:15');
+        expect(sec, 'hours minute seconds frames input without frameRate returns seconds without frames').to.equal(1);
+
+        if (converter === offsetToSeconds) {
+            sec = converter('00:01:01:25', null, 50);
+        } else {
+            sec = converter('00:01:01:25', 50);
+        }
+        expect(sec, 'hours minute seconds frames input with frameRate returns seconds').to.equal(61.5);
+    }
+
+    it('hms', function() {
+        var str = hms(3661);
+        expect(str, 'hms gives correct time string format').to.equal('01:01:01.000');
+
+        str = hms(1.11111);
+        expect(str, 'hms gives milliseconds rounded to 3dp').to.equal('00:00:01.111');
+    });
+
+    it('prefix, suffix', function() {
+        var pre = prefix(['1', '2'], '0');
+        expect(pre[0], 'prefix with 0 index correct').to.equal('01');
+        expect(pre[1], 'prefix with 1 index correct').to.equal('02');
+
+        var suf = suffix(['1', '2'], '0');
+        expect(suf[0], 'prefix suffix 0 index correct').to.equal('10');
+        expect(suf[1], 'prefix suffix 1 index correct').to.equal('20');
     });
 });

@@ -1,9 +1,44 @@
-import BrowserUtils from 'utils/browser';
+import {
+    isChrome,
+    isEdge,
+    isFacebook,
+    isFF,
+    isIE,
+    isMSIE,
+    isSafari,
+    isAndroid,
+    isAndroidNative,
+    isIOS,
+    isMobile,
+    isOSX,
+    isIPad,
+    isIPod,
+    isFlashSupported,
+    flashVersion,
+    isIframe,
+} from 'utils/browser';
 import { browserVersion } from './browser-version';
 import { osVersion } from './os-version';
-const memoize = require('utils/underscore').memoize;
+import _ from 'utils/underscore';
 
+const memoize = _.memoize;
 const userAgent = navigator.userAgent;
+
+function supportsPassive() {
+    let passiveOptionRead = false;
+
+    try {
+        const opts = Object.defineProperty({}, 'passive', {
+            get: function() {
+                passiveOptionRead = true;
+            }
+        });
+        window.addEventListener('testPassive', null, opts);
+        window.removeEventListener('testPassive', null, opts);
+    } catch (e) {/* noop */}
+
+    return passiveOptionRead;
+}
 
 /**
  * @typedef {object} EnvironmentVersion
@@ -14,6 +49,7 @@ const userAgent = navigator.userAgent;
 
 /**
  * @typedef {object} BrowserEnvironment
+ * @property {boolean} androidNative - Is the browser Android Native?
  * @property {boolean} chrome - Is the browser Chrome?
  * @property {boolean} edge - Is the browser Edge?
  * @property {boolean} facebook - Is the browser a Facebook webview?
@@ -28,7 +64,6 @@ export const Browser = {};
 /**
  * @typedef {object} OSEnvironment
  * @property {boolean} android - Is the operating system Android?
- * @property {boolean} androidNative - Is the operating system Android Native?
  * @property {boolean} iOS - Is the operating system iOS?
  * @property {boolean} mobile - Is the operating system iOS or Android?
  * @property {boolean} osx - Is the operating system Mac OS X?
@@ -41,7 +76,7 @@ export const OS = {};
 
 /**
  * @typedef {object} FeatureEnvironment
- * @property {boolean} flash - Does the session environment support Flash?
+ * @property {boolean} flash - Does the browser environment support Flash?
  * @property {number} flashVersion - The version of Flash.
  * @property {boolean} iframe - Is the session in an iframe?
  */
@@ -52,32 +87,36 @@ const isWindows = () => {
 };
 
 Object.defineProperties(Browser, {
+    androidNative: {
+        get: memoize(isAndroidNative),
+        enumerable: true
+    },
     chrome: {
-        get: memoize(BrowserUtils.isChrome),
+        get: memoize(isChrome),
         enumerable: true
     },
     edge: {
-        get: memoize(BrowserUtils.isEdge),
+        get: memoize(isEdge),
         enumerable: true
     },
     facebook: {
-        get: memoize(BrowserUtils.isFacebook),
+        get: memoize(isFacebook),
         enumerable: true
     },
     firefox: {
-        get: memoize(BrowserUtils.isFF),
+        get: memoize(isFF),
         enumerable: true
     },
     ie: {
-        get: memoize(BrowserUtils.isIE),
+        get: memoize(isIE),
         enumerable: true
     },
     msie: {
-        get: memoize(BrowserUtils.isMSIE),
+        get: memoize(isMSIE),
         enumerable: true
     },
     safari: {
-        get: memoize(BrowserUtils.isSafari),
+        get: memoize(isSafari),
         enumerable: true
     },
     version: {
@@ -88,31 +127,27 @@ Object.defineProperties(Browser, {
 
 Object.defineProperties(OS, {
     android: {
-        get: memoize(BrowserUtils.isAndroid),
-        enumerable: true
-    },
-    androidNative: {
-        get: memoize(BrowserUtils.isAndroidNative),
+        get: memoize(isAndroid),
         enumerable: true
     },
     iOS: {
-        get: memoize(BrowserUtils.isIOS),
+        get: memoize(isIOS),
         enumerable: true
     },
     mobile: {
-        get: memoize(BrowserUtils.isMobile),
+        get: memoize(isMobile),
         enumerable: true
     },
     mac: {
-        get: memoize(BrowserUtils.isOSX),
+        get: memoize(isOSX),
         enumerable: true
     },
     iPad: {
-        get: memoize(BrowserUtils.isIPad),
+        get: memoize(isIPad),
         enumerable: true
     },
     iPhone: {
-        get: memoize(BrowserUtils.isIPod),
+        get: memoize(isIPod),
         enumerable: true
     },
     windows: {
@@ -127,15 +162,23 @@ Object.defineProperties(OS, {
 
 Object.defineProperties(Features, {
     flash: {
-        get: memoize(BrowserUtils.isFlashSupported),
+        get: memoize(isFlashSupported),
         enumerable: true,
     },
     flashVersion: {
-        get: memoize(BrowserUtils.flashVersion),
+        get: memoize(flashVersion),
         enumerable: true
     },
     iframe: {
-        get: memoize(BrowserUtils.isIframe),
+        get: memoize(isIframe),
+        enumerable: true
+    },
+    passiveEvents: {
+        get: memoize(supportsPassive),
+        enumerable: true
+    },
+    backgroundLoading: {
+        get: memoize(() => !(OS.iOS || Browser.safari)),
         enumerable: true
     }
 });

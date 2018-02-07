@@ -1,38 +1,46 @@
-define([
-    'api/timer'
-], function (timer) {
+import Timer from 'api/timer';
+import { dateTime } from 'utils/clock';
+import { now } from 'utils/date';
 
-    describe('timer', function() {
+describe('clock', function() {
+    it('provides date time equal or close to Date.now()', function() {
+        const clockTime = dateTime();
+        const dateGetTime = now();
+        // With rounding differences between Date.now() and performance.now(),
+        // and JavaScipt execution, only allow a few milliseconds difference
+        expect(Math.abs(clockTime - dateGetTime)).to.be.below(5);
+    });
+});
 
-        it('timer start/end test', function() {
-            var time = new timer();
-            time.start('test');
-            time.end('test');
+describe('timer', function() {
 
-            var dump = time.dump();
-            assert.equal(dump.counts.test, 1, 'test has been called once');
-            assert.equal(typeof dump.sums.test, 'number', 'sum is a number');
+    it('timer start/end test', function() {
+        var time = new Timer();
+        time.start('test');
+        time.end('test');
 
-            var invalidEnd = time.end('notStarted');
-            assert.isNotOk(invalidEnd, 'function that has not yet started should have no end time');
-        });
+        var dump = time.dump();
+        expect(dump.counts.test, 'test has been called once').to.equal(1);
+        expect(typeof dump.sums.test, 'sum is a number').to.equal('number');
 
-        it('timer tick test', function (done) {
-            var time = new timer();
+        var invalidEnd = time.end('notStarted');
+        expect(invalidEnd, 'function that has not yet started should have no end time').to.be.undefined;
+    });
 
-            time.tick('event1');
+    it('timer tick test', function (done) {
+        var time = new Timer();
 
-            setTimeout(function() {
-                time.tick('event2');
+        time.tick('event1');
 
-                var between = time.between('event1', 'event2');
-                assert.isOk(between > 5 && between < 30000, 'between tick time is correctly calculated');
+        setTimeout(function() {
+            time.tick('event2');
 
-                between = time.between('no', 'value');
-                assert.equal(between, null, 'invalid tick events returns null');
-            }, 10);
+            var between = time.between('event1', 'event2');
+            expect(between > 5 && between < 30000, 'between tick time is correctly calculated').to.be.true;
+
+            between = time.between('no', 'value');
+            expect(between, 'invalid tick events returns null').to.equal(null);
             done();
-        });
-
+        }, 10);
     });
 });

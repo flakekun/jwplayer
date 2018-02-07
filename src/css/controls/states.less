@@ -1,11 +1,6 @@
 @import "../shared-imports/vars";
 @import "imports/icons";
 
-// controls are displayed but hidden during setup for font icons to load
-.jw-state-setup .jw-controls {
-    visibility: hidden;
-}
-
 // idle
 .jw-state-idle {
 
@@ -14,9 +9,19 @@
         .jw-display {
             padding: 0;
         }
+    }
 
-        .jw-controls {
-            background: none;
+    .jw-controls {
+        background: @controlbar-background;
+    }
+
+    &.jw-flag-cast-available:not(.jw-flag-audio-player),
+    &.jw-flag-cardboard-available {
+        .jw-controlbar {
+            .jw-slider-time,
+            .jw-icon:not(.jw-icon-cardboard):not(.jw-icon-cast):not(.jw-icon-airplay) {
+                display: none;
+            }
         }
     }
 }
@@ -24,9 +29,12 @@
 // buffering
 .jwplayer.jw-state-buffering {
     .jw-display-icon-display .jw-icon {
-        .jw-icon-buffer;
-
         animation: spin 2s linear infinite;
+
+        .jw-svg-icon-buffer {
+            display: block;
+        }
+
         @keyframes spin {
             100% {
                 transform: rotate(360deg);
@@ -35,7 +43,13 @@
     }
 
     .jw-icon-playback {
-        .jw-icon-pause;
+        .jw-svg-icon-play {
+            display: none;
+        }
+    }
+
+    .jw-icon-display .jw-svg-icon-pause {
+        display: none;
     }
 }
 
@@ -43,12 +57,23 @@
 .jwplayer.jw-state-playing {
     .jw-display .jw-icon-display,
     .jw-icon-playback {
-        .jw-icon-pause;
+        .jw-svg-icon-play {
+            display: none;
+        }
+
+        .jw-svg-icon-pause {
+            display: block;
+        }
     }
 
-    &.jw-flag-user-inactive:not(.jw-flag-casting) {
-        .jw-controls {
-            background: none;
+    &.jw-flag-user-inactive:not(.jw-flag-audio-player):not(.jw-flag-casting):not(.jw-flag-media-audio) {
+        .jw-controls-backdrop {
+            opacity: 0;
+        }
+
+        .jw-logo-bottom-left,
+        &:not(.jw-flag-autostart) .jw-logo-bottom-right {
+            bottom: 0;
         }
     }
 }
@@ -61,16 +86,58 @@
     }
 }
 
+.jwplayer.jw-state-paused,
+.jwplayer.jw-state-idle,
+.jwplayer.jw-state-error,
+.jwplayer.jw-state-complete {
+    .jw-svg-icon-pause {
+        display: none;
+    }
+}
+
+.jwplayer.jw-state-error,
+.jwplayer.jw-state-complete,
+.jwplayer.jw-state-buffering {
+    .jw-icon-display .jw-svg-icon-play {
+        display: none;
+    }
+}
+
+.jwplayer:not(.jw-state-buffering) {
+    .jw-svg-icon-buffer {
+        display: none;
+    }
+}
+
+.jwplayer:not(.jw-state-complete) {
+    .jw-svg-icon-replay {
+        display: none;
+    }
+}
+
+.jwplayer:not(.jw-state-error) {
+    .jw-svg-icon-error {
+        display: none;
+    }
+}
+
 // complete
 .jwplayer.jw-state-complete {
     .jw-display {
         .jw-icon-display {
-            .jw-icon-replay;
+            .jw-svg-icon-replay {
+                display: block;
+            }
         }
 
         .jw-text {
             display: none;
         }
+    }
+
+    .jw-controls {
+        background: @controlbar-background;
+        height: 100%;
     }
 }
 
@@ -79,7 +146,9 @@
 .jwplayer.jw-state-paused .jw-icon-playback,
 .jwplayer.jw-state-paused .jw-icon-display,
 .jwplayer.jw-state-complete .jw-icon-playback {
-    .jw-icon-play;
+    .jw-svg-icon-pause {
+        display: none;
+    }
 }
 
 // Only show the play display icon
@@ -98,7 +167,14 @@ body .jw-error,
 body .jwplayer.jw-state-error {
     .jw-icon-display {
         cursor: default;
-        .jw-icon-error;
+
+        .jw-svg-icon-error {
+            display: block;
+        }
+    }
+
+    .jw-controls-backdrop {
+        &:extend(.jw-state-idle .jw-controls-backdrop);
     }
 }
 
@@ -124,7 +200,7 @@ body .jwplayer.jw-state-error.jw-flag-audio-player {
     .jw-title-primary {
         width: auto;
         display: inline-block;
-        padding-right: 0;
+        padding-right: 0.5ch;
     }
 
     .jw-title-secondary {
@@ -136,13 +212,24 @@ body .jwplayer.jw-state-error.jw-flag-audio-player {
 
 // Hide control bar
 body .jwplayer.jw-state-error,
-.jwplayer.jw-state-idle:not(.jw-flag-audio-player):not(.jw-flag-casting):not(.jw-flag-cast-available) {
+.jwplayer.jw-state-idle:not(.jw-flag-audio-player):not(.jw-flag-cast-available):not(.jw-flag-cardboard-available) {
     .jw-controlbar {
         display: none;
     }
 
+    .jw-settings-menu {
+        height: 100%;
+        top: 0;
+        bottom: 0;
+    }
+
     .jw-display {
         padding: 0;
+    }
+
+    .jw-logo-bottom-left,
+    .jw-logo-bottom-right {
+        bottom: 0;
     }
 }
 
@@ -156,12 +243,18 @@ body .jwplayer.jw-state-error,
 }
 
 .jwplayer.jw-state-playing:not(.jw-flag-touch):not(.jw-flag-small-player):not(.jw-flag-casting),
-.jwplayer.jw-state-paused:not(.jw-flag-touch):not(.jw-flag-small-player):not(.jw-flag-casting) {
+.jwplayer.jw-state-paused:not(.jw-flag-touch):not(.jw-flag-small-player):not(.jw-flag-casting):not(.jw-flag-play-rejected) {
     .jw-display {
         display: none;
     }
 }
 /* stylelint-enable indentation */
+.jwplayer.jw-state-paused.jw-flag-play-rejected:not(.jw-flag-touch):not(.jw-flag-small-player):not(.jw-flag-casting) {
+    .jw-display-icon-rewind,
+    .jw-display-icon-next {
+        display: none;
+    }
+}
 
 // Hide text
 .jwplayer.jw-state-buffering .jw-display-icon-display,

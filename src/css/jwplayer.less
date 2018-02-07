@@ -1,11 +1,9 @@
 @import "jwplayer/imports/reset";
 
-@import "shared-imports/mixins";
+@import (reference) "shared-imports/mixins";
+@import (reference) "shared-imports/vars";
 
-@accent-color: #fff;
-@inactive-color: #cecece;
-
-@controlbar-background: rgba(33, 33, 33, 0.8);
+@controlbar-background: fade(@black, 40%);
 @display-bkgd-color: @controlbar-background;
 @display-bkgd-hover-color: rgba(33, 33, 33, 1);
 
@@ -24,7 +22,6 @@
 
 // State specific
 @import "jwplayer/states";
-@import "jwplayer/flags/skinloading";            // Hides content until styles loaded.  Rename stylesloading.les
 @import "jwplayer/flags/fullscreen";
 @import "jwplayer/flags/flash-blocked";
 @import "jwplayer/flags/controls-hidden";

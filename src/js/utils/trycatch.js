@@ -1,32 +1,21 @@
-define([
-], function() {
-    var tryCatch = function (fn, ctx, args) {
-        // IE8 requires these not be undefined
-        ctx = ctx || this;
-        args = args || [];
+import ApiSettings from 'api/api-settings';
 
-        // if in debug mode, let 'er blow!
-        var jwplayer = window.jwplayer;
-        if (jwplayer && jwplayer.debug) {
-            return fn.apply(ctx, args);
-        }
+export function tryCatch(fn, ctx, args = []) {
+    // In debug mode, allow `fn` to throw exceptions
+    if (ApiSettings.debug) {
+        return fn.apply(ctx || this, args);
+    }
 
-        // else be careful
-        try {
-            return fn.apply(ctx, args);
-        } catch (e) {
-            return new JWError(fn.name, e);
-        }
-    };
+    // else catch exceptions and return a `JWError`
+    try {
+        return fn.apply(ctx || this, args);
+    } catch (e) {
+        return new JwError(fn.name, e);
+    }
+}
 
-    var JWError = function (name, error) {
-        this.name = name;
-        this.message = error.message || error.toString();
-        this.error = error;
-    };
-
-    return {
-        tryCatch: tryCatch,
-        Error: JWError
-    };
-});
+export function JwError(name, error) {
+    this.name = name;
+    this.message = error.message || error.toString();
+    this.error = error;
+}

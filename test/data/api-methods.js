@@ -1,4 +1,4 @@
-define({
+export default {
 
     // These are added by api-deprecate on setup
     // They are not core API methods
@@ -55,6 +55,7 @@ define({
     playlistItem: null,
     playlistNext: null,
     playlistPrev: null,
+    playToggle: null,
     qoe: null,
     registerPlugin: null,
     remove: null,
@@ -78,6 +79,5 @@ define({
     on: null,
     once: null,
     skipAd: null,
-    trigger: null,
-    triggerSafe: null
-});
+    trigger: null
+};

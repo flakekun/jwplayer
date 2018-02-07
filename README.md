@@ -1,10 +1,11 @@
 # <img height="70px" src="http://www.jwplayer.com/wp-content/uploads/JWP-GitHub-Banner-1.png" alt="JW Player Logo" title="JW Player Logo"/>
 
-[![Join the chat at https://gitter.im/jwplayer/jwplayer](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/jwplayer/jwplayer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-
 > Plays everywhere, every time.
 
 Live on over 2 million sites with 1.3 billion unique plays per month, JW Player is the solution for seamless video playback across browsers and media types. It empowers the developer to interact with video programmatically to create unique and awesome user experiences.
+  
+## Disclaimer
+This is the non-commercial version of JW Player. It does not contain the same features as the commercial-use player available from [jwplayer.com](https://www.jwplayer.com/). Commercial use and access to features requires a license. Learn more at https://www.jwplayer.com/pricing/. If you are a paid customer and want a player, please download it from the "Downloads" section of your JW Dashboard.
   
 ## Official Documentation
 - [Developer Portal](https://developer.jwplayer.com/)
@@ -12,10 +13,6 @@ Live on over 2 million sites with 1.3 billion unique plays per month, JW Player 
 - [Configuration Reference](https://developer.jwplayer.com/jw-player/docs/developer-guide/customization/configuration-reference/)
 - [Demos](https://developer.jwplayer.com/jw-player/demos/)
 - [Support](http://support.jwplayer.com/)
-
-
-This is the free version of JW Player. It does not contain the same features as the Premium, Platinum, or Enterprise editions. If you are a paid customer and want a player, please download it from the "Downloads" section of your JW Dashboard.
-
 
 ## A Simple Example
 
@@ -52,7 +49,7 @@ The example below will render a video player into the div with the `player` id, 
 </html>
 ````
 
-Check out an interactive example in this [JSFiddle](https://jsfiddle.net/Lgs0ou8s/4/).
+Check out an interactive example in this [JSFiddle](https://jsfiddle.net/Lgs0ou8s/683/).
 
 ## Contributing
 
@@ -64,11 +61,8 @@ We use `grunt` and a few `npm scripts` to build the player, lint code, and run t
 
 #### Requirements:
 
-1. [Node.js](https://nodejs.org/download)
-2. [Java](https://java.com/en/download/)* 
- 
-\* Optional, but required for building Flash. If not installed you must `grunt` with the `--force` flag. 
- 
+1. [Node.js](https://nodejs.org/download) and npm
+
 #### Steps:
 
 1. Fork the project, clone your fork, and set up the remotes:
@@ -92,9 +86,9 @@ npm install -g webpack-dev-server
  
 3. Build the player:
 ````bash
-# Build once, Flash and JS
+# Build once
 grunt
-# Complete Watch - builds FLash and JS, lints, and tests on each change
+# Complete Watch - builds JS, lints, and tests on each change
 grunt serve
 # Quick JS Watch - build only. Requires webpack-dev-server to be installed globally
 webpack-dev-server -w --env.debug --port 8888 --output-public-path /bin-debug/
@@ -104,7 +98,7 @@ webpack-dev-server -w --env.debug --port 8888 --output-public-path /bin-debug/
 ````bash
 # All browsers
 grunt test
-# Individual browsers - chrome, firefox, ie11, ie10, ie9
+# Individual browsers - chrome, firefox, safari
 grunt karma:{BROWSER} e.g. grunt karma:chrome
 ````
  
@@ -112,6 +106,12 @@ grunt karma:{BROWSER} e.g. grunt karma:chrome
 ````bash
 npm run lint
 ````
+
+6. Setup git pre-push hook
+# Will lint and run unit tests on the branch before any push to remote
+````bash
+grunt hooks
+```` 
 
 ## Software License
 

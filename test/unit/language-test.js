@@ -1,178 +1,176 @@
-define([
-    'utils/language',
-], function (langUtils) {
-    describe('languageUtils', function() {
+import { getLabel, getCode } from 'utils/language';
 
-        describe('getLabel from unsupported codes', function() {
+describe('languageUtils', function() {
 
-            it('should not change value if there is no matching language code', function() {
-                assert.equal(langUtils.getLabel(), undefined);
-                assert.equal(langUtils.getLabel(null), null);
-                assert.equal(langUtils.getLabel('po'), 'po');
-                assert.equal(langUtils.getLabel('pol'), 'pol');
+    describe('getLabel from unsupported codes', function() {
+
+        it('should not change value if there is no matching language code', function() {
+            expect(getLabel()).to.equal(undefined);
+            expect(getLabel(null)).to.equal(undefined);
+            expect(getLabel('po')).to.equal('po');
+            expect(getLabel('pol')).to.equal('pol');
+        });
+
+        describe('getLabel from ISO 639-1 codes', function() {
+
+            it('should be English for its codes', function() {
+                var expected = 'English';
+
+                expect(getLabel('en')).to.equal(expected);
             });
 
-            describe('getLabel from ISO 639-1 codes', function() {
+            it('should be Chinese for its codes', function() {
+                var expected = 'Chinese';
 
-                it('should be English for its codes', function() {
-                    var expected = 'English';
-
-                    assert.equal(langUtils.getLabel('en'), expected);
-                });
-
-                it('should be Chinese for its codes', function() {
-                    var expected = 'Chinese';
-
-                    assert.equal(langUtils.getLabel('zh'), expected);
-                });
-
-                it('should be Dutch for its codes', function() {
-                    var expected = 'Dutch';
-
-                    assert.equal(langUtils.getLabel('nl'), expected);
-                });
-
-                it('should be French for its codes', function() {
-                    var expected = 'French';
-
-                    assert.equal(langUtils.getLabel('fr'), expected);
-                });
-
-                it('should be German for its codes', function() {
-                    var expected = 'German';
-
-                    assert.equal(langUtils.getLabel('de'), expected);
-                });
-
-                it('should be Japanese for its codes', function() {
-                    var expected = 'Japanese';
-
-                    assert.equal(langUtils.getLabel('ja'), expected);
-                });
-
-                it('should be Portuguese for its codes', function() {
-                    var expected = 'Portuguese';
-
-                    assert.equal(langUtils.getLabel('pt'), expected);
-                });
-
-                it('should be Italian for its codes', function() {
-                    var expected = 'Italian';
-
-                    assert.equal(langUtils.getLabel('it'), expected);
-                });
-
-                it('should be Russian for its codes', function() {
-                    var expected = 'Russian';
-
-                    assert.equal(langUtils.getLabel('ru'), expected);
-                });
-
-                it('should be Spanish for its codes', function() {
-                    var expected = 'Spanish';
-
-                    assert.equal(langUtils.getLabel('es'), expected);
-                });
-
-                it('should map based only on the first two characters', function () {
-                   var expected = 'Portuguese';
-                   assert.equal(langUtils.getLabel('pt-br'), expected);
-                });
+                expect(getLabel('zh')).to.equal(expected);
             });
 
-            describe('getLabel from ISO 639-2 codes', function() {
+            it('should be Dutch for its codes', function() {
+                var expected = 'Dutch';
 
-                it('should not change for its English codes', function() {
-                    assert.equal(langUtils.getLabel('eng'), 'eng');
-                });
-
-                it('should not change for its Chinese codes', function() {
-                    assert.equal(langUtils.getLabel('zho'), 'zho');
-                    assert.equal(langUtils.getLabel('chi'), 'chi');
-                });
-
-                it('should not change for its Dutch codes', function() {
-                    assert.equal(langUtils.getLabel('nld'), 'nld');
-                    assert.equal(langUtils.getLabel('dut'), 'dut');
-                });
-
-                it('should not change for its French codes', function() {
-                    assert.equal(langUtils.getLabel('fra'), 'fra');
-                    assert.equal(langUtils.getLabel('fre'), 'fre');
-                });
-
-                it('should not change for its Herman codes', function() {
-                    assert.equal(langUtils.getLabel('deu'), 'deu');
-                    assert.equal(langUtils.getLabel('ger'), 'ger');
-                });
-
-                it('should not change for its Japanese codes', function() {
-                    assert.equal(langUtils.getLabel('jpn'), 'jpn');
-                });
-
-                it('should not change for its Portuguese codes', function() {
-                    assert.equal(langUtils.getLabel('por'), 'por');
-                });
-
-                it('should not change for its Italian codes', function() {
-                    assert.equal(langUtils.getLabel('ita'), 'ita');
-                });
-
-                it('should not change for its Russian codes', function() {
-                    assert.equal(langUtils.getLabel('rus'), 'rus');
-                });
-
-                it('should not change for its Spanish codes', function() {
-                    assert.equal(langUtils.getLabel('esp'), 'esp');
-                    assert.equal(langUtils.getLabel('spa'), 'spa');
-                });
+                expect(getLabel('nl')).to.equal(expected);
             });
 
-            describe('getCode from ISO 639-1 codes', function() {
+            it('should be French for its codes', function() {
+                var expected = 'French';
 
-                it('should be English for its codes', function() {
-                    expect(langUtils.getCode('English')).to.equal('en');
-                });
+                expect(getLabel('fr')).to.equal(expected);
+            });
 
-                it('should be Chinese for its codes', function() {
-                    expect(langUtils.getCode('Chinese')).to.equal('zh');
-                });
+            it('should be German for its codes', function() {
+                var expected = 'German';
 
-                it('should be Dutch for its codes', function() {
-                    expect(langUtils.getCode('Dutch')).to.equal('nl');
-                });
+                expect(getLabel('de')).to.equal(expected);
+            });
 
-                it('should be French for its codes', function() {
-                    expect(langUtils.getCode('French')).to.equal('fr');
-                });
+            it('should be Japanese for its codes', function() {
+                var expected = 'Japanese';
 
-                it('should be German for its codes', function() {
-                    expect(langUtils.getCode('German')).to.equal('de');
-                });
+                expect(getLabel('ja')).to.equal(expected);
+            });
 
-                it('should be Japanese for its codes', function() {
-                    expect(langUtils.getCode('Japanese')).to.equal('ja');
-                });
+            it('should be Portuguese for its codes', function() {
+                var expected = 'Portuguese';
 
-                it('should be Portuguese for its codes', function() {
-                    expect(langUtils.getCode('Portuguese')).to.equal('pt');
-                });
+                expect(getLabel('pt')).to.equal(expected);
+            });
 
-                it('should be Italian for its codes', function() {
-                    expect(langUtils.getCode('Italian')).to.equal('it');
-                });
+            it('should be Italian for its codes', function() {
+                var expected = 'Italian';
 
-                it('should be Russian for its codes', function() {
-                    expect(langUtils.getCode('Russian')).to.equal('ru');
-                });
+                expect(getLabel('it')).to.equal(expected);
+            });
 
-                it('should be Spanish for its codes', function() {
-                    expect(langUtils.getCode('Spanish')).to.equal('es');
-                });
+            it('should be Russian for its codes', function() {
+                var expected = 'Russian';
 
-                it('should be Greek for its codes', function() {
-                    expect(langUtils.getCode('Greek')).to.equal('el');
-                });
+                expect(getLabel('ru')).to.equal(expected);
+            });
+
+            it('should be Spanish for its codes', function() {
+                var expected = 'Spanish';
+
+                expect(getLabel('es')).to.equal(expected);
+            });
+
+            it('should map based only on the first two characters', function() {
+                var expected = 'Portuguese';
+                expect(getLabel('pt-br')).to.equal(expected);
+            });
+        });
+
+        describe('getLabel from ISO 639-2 codes', function() {
+
+            it('should not change for its English codes', function() {
+                expect(getLabel('eng')).to.equal('eng');
+            });
+
+            it('should not change for its Chinese codes', function() {
+                expect(getLabel('zho')).to.equal('zho');
+                expect(getLabel('chi')).to.equal('chi');
+            });
+
+            it('should not change for its Dutch codes', function() {
+                expect(getLabel('nld')).to.equal('nld');
+                expect(getLabel('dut')).to.equal('dut');
+            });
+
+            it('should not change for its French codes', function() {
+                expect(getLabel('fra')).to.equal('fra');
+                expect(getLabel('fre')).to.equal('fre');
+            });
+
+            it('should not change for its Herman codes', function() {
+                expect(getLabel('deu')).to.equal('deu');
+                expect(getLabel('ger')).to.equal('ger');
+            });
+
+            it('should not change for its Japanese codes', function() {
+                expect(getLabel('jpn')).to.equal('jpn');
+            });
+
+            it('should not change for its Portuguese codes', function() {
+                expect(getLabel('por')).to.equal('por');
+            });
+
+            it('should not change for its Italian codes', function() {
+                expect(getLabel('ita')).to.equal('ita');
+            });
+
+            it('should not change for its Russian codes', function() {
+                expect(getLabel('rus')).to.equal('rus');
+            });
+
+            it('should not change for its Spanish codes', function() {
+                expect(getLabel('esp')).to.equal('esp');
+                expect(getLabel('spa')).to.equal('spa');
+            });
+        });
+
+        describe('getCode from ISO 639-1 codes', function() {
+
+            it('should be English for its codes', function() {
+                expect(getCode('English')).to.equal('en');
+            });
+
+            it('should be Chinese for its codes', function() {
+                expect(getCode('Chinese')).to.equal('zh');
+            });
+
+            it('should be Dutch for its codes', function() {
+                expect(getCode('Dutch')).to.equal('nl');
+            });
+
+            it('should be French for its codes', function() {
+                expect(getCode('French')).to.equal('fr');
+            });
+
+            it('should be German for its codes', function() {
+                expect(getCode('German')).to.equal('de');
+            });
+
+            it('should be Japanese for its codes', function() {
+                expect(getCode('Japanese')).to.equal('ja');
+            });
+
+            it('should be Portuguese for its codes', function() {
+                expect(getCode('Portuguese')).to.equal('pt');
+            });
+
+            it('should be Italian for its codes', function() {
+                expect(getCode('Italian')).to.equal('it');
+            });
+
+            it('should be Russian for its codes', function() {
+                expect(getCode('Russian')).to.equal('ru');
+            });
+
+            it('should be Spanish for its codes', function() {
+                expect(getCode('Spanish')).to.equal('es');
+            });
+
+            it('should be Greek for its codes', function() {
+                expect(getCode('Greek')).to.equal('el');
             });
         });
     });

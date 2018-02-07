@@ -34,66 +34,25 @@ module.exports = function(grunt) {
     var packageInfo = grunt.file.readJSON('package.json');
     var buildVersion = getBuildVersion(packageInfo);
 
-    // For task testing
-    // grunt.loadTasks('../grunt-flash-compiler/tasks');
-
     console.log('%s v%s', packageInfo.name, buildVersion);
 
     grunt.initConfig({
         starttime: new Date(),
         pkg: packageInfo,
-
-        stylelint: {
-            options: {
-                configFile: '.stylelintrc',
-                formatter: 'string',
-                ignoreDisables: false,
-                failOnError: true,
-                reportNeedlessDisables: false,
-                syntax: 'less'
-            },
-            src: [
-                'src/**/*.less'
-            ]
-        },
-
         less: {
             options: {
                 compress: false,
-                paths: ['src/css', 'src/css/*']
+                paths: ['src/css', 'src/css/*'],
+                strictMath: true
             },
             internal: {
                 options: {
                     dumpLineNumbers: 'comments'
                 },
                 files: {
-                    'bin-debug/reference/jwplayer.css': 'src/css/jwplayer.less',
-                    'bin-debug/reference/controls.css': 'src/css/controls.less'
+                    'bin-debug/css/jwplayer.css': 'src/css/jwplayer.less',
+                    'bin-debug/css/controls.css': 'src/css/controls.less'
                 }
-            },
-            debug: {
-                options: {
-                    dumpLineNumbers: 'comments'
-                },
-                files: [{
-                    expand: true,
-                    ext: '.css',
-                    dest: 'bin-debug/skins/',
-                    cwd: 'src/css/skins/',
-                    src: '*.less'
-                }]
-            },
-            release: {
-                options: {
-                    compress: true
-                },
-                files: [{
-                    expand: true,
-                    ext: '.css',
-                    dest: 'bin-release/skins/',
-                    cwd: 'src/css/skins/',
-                    src: '*.less'
-                }]
             }
         },
 
@@ -107,20 +66,12 @@ module.exports = function(grunt) {
             },
             internal: {
                 src: [
-                    'bin-debug/reference/*.css',
-                    'bin-debug/skins/*.css',
+                    'bin-debug/css/*.css',
                 ]
             },
             debug: {
                 src: [
-                    'bin-debug/reference/*.css',
-                    'bin-debug/skins/*.css',
-                    'bin-release/skins/*.css'
-                ]
-            },
-            release: {
-                src: [
-                    'bin-release/skins/*.css'
+                    'bin-debug/css/*.css',
                 ]
             }
         },
@@ -149,18 +100,11 @@ module.exports = function(grunt) {
             },
             css: {
                 files: ['src/css/{,*/}*.less'],
-                tasks: ['stylelint', 'webpack:debug', 'less:debug', 'postcss:debug']
+                tasks: ['stylelint', 'webpack:debug', 'postcss:debug']
             },
             tests: {
                 files: ['test/{,*/}*.js'],
                 tasks: ['lint:tests', 'karma:local']
-            },
-            flash: {
-                files: [
-                    'src/flash/com/longtailvideo/jwplayer/{,*/}*.as',
-                    'src/flash/com/wowsa/{,*/}*.as'
-                ],
-                tasks: ['flash:debug']
             }
         },
 
@@ -178,36 +122,6 @@ module.exports = function(grunt) {
                     base: [
                         '.'
                     ]
-                }
-            }
-        },
-        flash: {
-            options: {
-                flashVersion: '18.0',
-                swfTarget: 29,
-                targetCompilerOptions : [
-                    '-define+=JWPLAYER::version,\'' + packageInfo.version + '\''
-                ]
-            },
-            debug : {
-                options : {
-                    debug : true
-                },
-                files : {
-                    'bin-debug/jwplayer.flash.swf' : 'src/flash/com/longtailvideo/jwplayer/player/Player.as'
-                }
-            },
-            release : {
-                files : {
-                    'bin-release/jwplayer.flash.swf': 'src/flash/com/longtailvideo/jwplayer/player/Player.as'
-                }
-            },
-            library: {
-                options: {
-                    swc: true
-                },
-                files : {
-                     'libs-external/jwplayer.flash.swc' : 'src/flash/com/longtailvideo/jwplayer/player/Player.as'
                 }
             }
         },
@@ -234,7 +148,7 @@ module.exports = function(grunt) {
                 browsers: ['Safari']
             },
             browserstack: {
-                browsers: ['chrome', 'firefox', 'ie11_windows']
+                browsers: ['chrome', 'firefox', 'edge', 'ie11_windows']
             },
             browserstack_chrome: {
                 browsers: ['chrome']
@@ -247,12 +161,6 @@ module.exports = function(grunt) {
             },
             browserstack_ie11: {
                 browsers: ['ie11_windows']
-            },
-            browserstack_ie10: {
-                browsers: ['ie10_windows']
-            },
-            browserstack_ie9: {
-                browsers: ['ie9_windows']
             }
         },
 
@@ -304,7 +212,15 @@ module.exports = function(grunt) {
         });
     });
 
-    grunt.registerTask('lint', 'ESLint JavaScript', function(target) {
+    grunt.registerTask('hooks', 'Install Pre Push Hook', function() {
+        var command = '\\cp .github/hooks/pre-push .git/hooks/pre-push';
+        execSync(command, {
+            cwd: '.',
+            stdio: [0, 1, 2]
+        });
+    });
+
+    grunt.registerTask('lint', 'ESLints JavaScript & Stylelints LESS', function(target) {
         var command = 'npm run lint';
         if (target === 'test') {
             command = command + '-tests';
@@ -325,13 +241,7 @@ module.exports = function(grunt) {
 
     grunt.registerTask('karma:local', 'karma:phantomjs');
 
-    grunt.registerTask('karma:remote', [
-        'karma:browserstack',
-        'karma:browserstack_firefox',
-        'karma:browserstack_ie11',
-        'karma:browserstack_ie10',
-        'karma:browserstack_ie9'
-    ]);
+    grunt.registerTask('karma:remote', 'karma:browserstack');
 
     grunt.registerTask('test', [
         'karma'
@@ -340,20 +250,13 @@ module.exports = function(grunt) {
     grunt.registerTask('build-js', [
         'webpack',
         'lint:player',
-        'stylelint',
         'less',
         'postcss'
-    ]);
-
-    grunt.registerTask('build-flash', [
-        'flash:debug',
-        'flash:release'
     ]);
 
     grunt.registerTask('build', [
         'clean:dist',
         'build-js',
-        'build-flash',
         'karma:local'
     ]);
 

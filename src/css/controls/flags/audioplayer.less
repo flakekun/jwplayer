@@ -1,5 +1,7 @@
+@import "../../shared-imports/vars";
+
 .jw-flag-audio-player {
-    background-color: transparent;
+    background-color: @black;
 
     &:not(.jw-flag-flash-blocked) .jw-media {
         visibility: hidden;
@@ -9,62 +11,67 @@
         background: none;
     }
 
-    // min 60px object tag prevents IE11 CORS Flash Blocking
+    // min 44px object tag prevents IE11 CORS Flash Blocking
     object {
-        min-height: 60px;
+        min-height: @mobile-touch-target;
     }
 
     .jw-preview, // overrides 'block' from .jw-state-idle
     .jw-display, // overrides 'block' from .jw-flag-touch.jw-state-paused
     .jw-title, // overrides 'block' from .jw-state-idle
-    .jw-nextup-container,
-    .jw-dock {
+    .jw-nextup-container {
         display: none;
     }
 
     .jw-controlbar {
-        vertical-align: middle;
-        display: table;
-        height: 100%;
-        left: 0;
-        bottom: 0;
-        margin: 0;
-        width: 100%;
-        min-width: 100%;
+        // prevents children from exploding out of this container when set too small
+        position: relative;
 
-        .jw-icon-fullscreen,
-        .jw-icon-tooltip {
+        .jw-button-container {
+            padding-right: 3px;
+            padding-left: 0;
+        }
+
+        .jw-icon-tooltip,
+        .jw-icon-inline {
             display: none;
         }
 
-        .jw-slider-volume.jw-slider-horizontal,
-        .jw-icon-inline.jw-icon-volume {
-            display: inline-block;
+        .jw-icon-volume:not(.jw-icon-tooltip),
+        .jw-icon-playback,
+        .jw-icon-next,
+        .jw-icon-rewind,
+        .jw-icon-cast,
+        .jw-icon-live,
+        .jw-icon-airplay,
+        .jw-logo-button,
+        .jw-text-elapsed,
+        .jw-text-duration {
+            display: flex;
+            flex: 0 0 auto;
         }
 
-        .jw-icon-tooltip.jw-icon-volume {
-            display: none;
+        .jw-text-duration,
+        .jw-text-countdown {
+            padding-right: 10px;
         }
-    }
 
-    // Setting height/line-height to their defaults allows the controls to responsively resize
-    .jw-icon-inline {
-        height: auto;
-        line-height: normal;
-    }
-
-    .jw-group {
-        vertical-align: middle;
-    }
-
-    // Small hack to keep the seekbar properly centered with the other elemenets when vertical-align: middle'd
-    .jw-controlbar-center-group {
-        padding-bottom: 2px;
+        .jw-slider-time {
+            display: flex;
+            flex: 0 1 auto;
+            align-items: center;
+        }
     }
 
     &.jw-flag-small-player {
         .jw-text-elapsed,
         .jw-text-duration {
+            display: none;
+        }
+    }
+
+    &.jw-flag-ads {
+        .jw-slider-time {
             display: none;
         }
     }

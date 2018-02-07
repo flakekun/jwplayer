@@ -24,16 +24,12 @@
             .jw-display {
                 display: table;
             }
-
-            .jw-dock {
-                display: block;
-            }
         }
     }
 
     &.jw-flag-casting {
         .jw-nextup-container {
-            bottom: @mobile-touch-target * 1.5;
+            bottom: (@mobile-touch-target * 1.5);
         }
 
         &.jw-state-idle {
@@ -42,4 +38,8 @@
             }
         }
     }
+}
+
+.jw-state-playing.jw-flag-user-inactive .jw-autostart-mute {
+    display: flex;
 }

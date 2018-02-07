@@ -4,7 +4,9 @@
 .jw-state-setup {
     background-color: transparent;
 
-    .jw-logo {
+    .jw-logo,
+    .jw-controls,
+    .jw-controls-backdrop {
         visibility: hidden;
     }
 }
@@ -12,35 +14,82 @@
 // errors
 body .jw-error,
 body .jwplayer.jw-state-error {
-    .jw-title {
-        display: block;
+    &:extend(._stretch);
+    background-color: #333;
+    color: @font-color;
+    font-size: @default-em-size;
+    display: table;
+    opacity: 1;
+    overflow: hidden;
+    position: relative;
 
-        .jw-title-primary {
-            white-space: normal;
+    .jw-display {
+        display: none;
+    }
+
+    .jw-media {
+        cursor: default;
+    }
+
+    .jw-preview {
+        background-color: #333;
+    }
+
+    .jw-error-msg {
+        .topleft(50%, 50%);
+        align-items: center;
+        background-color: @black;
+        border-radius: 2px;
+        display: flex;
+        padding: 20px;
+        transform: translate(-50%, -50%);
+
+        .jw-icon {
+            .square(30px);
+            margin-right: 20px;
+            flex: 0 0 auto;
+
+            &:empty {
+                display: none;
+            }
         }
 
-        .jw-title-secondary {
+        .jw-title {
             display: block;
+            position: static;
+
+            &,
+            &-primary,
+            &-secondary {
+                font-size: 14px;
+                line-height: 1.35;
+                padding: 0;
+            }
+
+            &-primary {
+                font-weight: 600;
+                white-space: normal;
+            }
         }
     }
 }
 
-body .jw-error {
-    font-size: @default-em-size;
-    background-color: #000;
-    color: @font-color;
-    width: 100%;
-    height: 100%;
-    display: table;
-    opacity: 1;
-    position: relative;
+.jwplayer.jw-state-error.jw-flag-audio-player {
+    .jw-error-msg {
+        .stretch();
+        .topleft();
+        background: @black;
+        transform: none;
+        padding: 0 16px;
+        z-index: 1;
+    }
 }
 
 // Show preview
 body .jwplayer.jw-state-error,
 body .jw-error,
 .jw-state-idle,
-.jwplayer.jw-state-complete:not(.jw-flag-casting):not(.jw-flag-audio-player) {
+.jwplayer.jw-state-complete:not(.jw-flag-casting):not(.jw-flag-audio-player):not(.jw-flag-overlay-open-related) {
     // Show the title
     .jw-title {
         display: block;

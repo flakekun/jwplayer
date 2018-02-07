@@ -1,54 +1,49 @@
-define([
-    'test/underscore',
-    'data/mp4',
-    'playlist/playlist',
-    'playlist/source',
-    'playlist/track',
-    'playlist/item'
-], function (_, mp4, playlist, source, track, item) {
+import Playlist from 'playlist/playlist';
+import Item from 'playlist/item';
+import Source from 'playlist/source';
+import _ from 'test/underscore';
+import mp4 from 'data/mp4';
+import track from 'playlist/track';
 
+function isValidPlaylistItem(playlistItem) {
+    return _.isObject(playlistItem) && _.isArray(playlistItem.sources) && _.isArray(playlistItem.tracks);
+}
 
-    function isValidPlaylistItem(playlistItem) {
-        return _.isObject(playlistItem) && _.isArray(playlistItem.sources) && _.isArray(playlistItem.tracks);
-    }
+describe('playlist', function() {
 
-    describe('playlist', function() {
+    it('Test initialized successfully', function() {
 
-        it('Test initialized successfully', function() {
-
-            assert.equal(typeof item, 'function', 'item is defined');
-            assert.equal(typeof source, 'function', 'source is defined');
-            assert.equal(typeof track, 'function', 'track is defined');
-        });
-
-        it('Test constructor with single item', function() {
-            var p;
-
-            p = playlist(mp4.starscape);
-            assert.isOk(isValidPlaylistItem(p[0]), 'Initialize single item');
-
-            p = playlist(undefined);
-            assert.isOk(isValidPlaylistItem(p[0]), 'Initialize with undefined item');
-
-            // TODO: this doesn't actually work, shouldn't pass
-            p = playlist(mp4.starscape.file);
-            assert.isOk(isValidPlaylistItem(p[0]), 'Initialize with just file name');
-        });
-
-        it('Test constructor with array of items', function() {
-            var p;
-            var arr = [mp4.starscape, mp4.starscape, mp4.starscape];
-
-            p = playlist(arr);
-            assert.equal(p.length, arr.length, 'Same number of items initialized');
-
-            p = playlist([mp4.starscape]);
-            assert.isOk(isValidPlaylistItem(p[0]), 'Initialize single item array');
-
-            // TODO: inconsistent, this is the only case where it returns an empty array
-            p = playlist([]);
-            assert.isOk(_.isArray(p) && p.length === 0, 'Initialize with an empty array as argument');
-        });
+        expect(typeof Item, 'item is defined').to.equal('function');
+        expect(typeof Source, 'source is defined').to.equal('function');
+        expect(typeof track, 'track is defined').to.equal('function');
     });
 
+    it('Test constructor with single item', function() {
+        var p;
+
+        p = Playlist(mp4.starscape);
+        expect(isValidPlaylistItem(p[0]), 'Initialize single item').to.be.true;
+
+        p = Playlist(undefined);
+        expect(isValidPlaylistItem(p[0]), 'Initialize with undefined item').to.be.true;
+
+        // TODO: this doesn't actually work, shouldn't pass
+        p = Playlist(mp4.starscape.file);
+        expect(isValidPlaylistItem(p[0]), 'Initialize with just file name').to.be.true;
+    });
+
+    it('Test constructor with array of items', function() {
+        var p;
+        var arr = [mp4.starscape, mp4.starscape, mp4.starscape];
+
+        p = Playlist(arr);
+        expect(p.length, 'Same number of items initialized').to.equal(arr.length);
+
+        p = Playlist([mp4.starscape]);
+        expect(isValidPlaylistItem(p[0]), 'Initialize single item array').to.be.true;
+
+        // TODO: inconsistent, this is the only case where it returns an empty array
+        p = Playlist([]);
+        expect(_.isArray(p) && p.length === 0, 'Initialize with an empty array as argument').to.be.true;
+    });
 });

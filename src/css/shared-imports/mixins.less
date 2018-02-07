@@ -1,4 +1,7 @@
 @import "vars";
+@import (reference) "mixins/rect";
+@import (reference) "mixins/position";
+@import (reference) "mixins/pseudo";
 
 .inset-controlbar() {
     &:not(.jw-flag-audio-player) {
@@ -26,25 +29,19 @@
         }
 
         .jw-captions {
-            max-height: ~"calc(100% - 46px)";
+            max-height: calc(100% - 46px);
         }
 
         .jwplayer& {
             /* captions styles code specific to native text track rendering */
             video::-webkit-media-text-track-container {
-                max-height: ~"calc(100% - 46px)";
+                max-height: calc(100% - 46px);
             }
         }
     }
 
-    &:not(.jw-flag-audio-player):not(.jw-flag-small-player) {
-        &.jw-ie.jw-flag-ads .jw-controlbar-center-group .jw-text-alt {
-            top: 1px;
-        }
-    }
-
     .jw-nextup-container {
-        bottom: @controlbar-height + 0.7em;
+        bottom: (@controlbar-height + 0.7em);
         padding-left: 0;
         padding-right: 0;
         max-width: @min-breakpoint-5-width;
@@ -58,18 +55,14 @@
             padding-right: 2%;
         }
     }
-
-    &.jw-flag-audio-player .jw-controlbar {
-        bottom: 0; // overwrite the inset-controlbar mixin
-    }
 }
 
 .vertically-centered-rail-element(@rail-height, @element-height) {
-    top: (@rail-height - @element-height)/2;
+    top: ((@rail-height - @element-height) / 2);
 }
 
 .horizontally-centered-rail-element(@rail-width, @element-width) {
-    left: (@rail-width - @element-width)/2;
+    left: ((@rail-width - @element-width) / 2);
 }
 
 .skin-element-padding() {
@@ -85,7 +78,9 @@
 /* Less requires namespaced variables/mixins to overwrite globals - https://github.com/less/less.js/issues/1316 */
 
 /* Mixin for common skin styles with variable colors */
+/* stylelint-disable selector-max-id */
 #namespace() {
+    @import "vars";
     .basic-skin-styles() {
         .jw-background-color {
             background: @controlbar-background;
@@ -102,14 +97,14 @@
 
         .jw-button-color {
             color: @inactive-color;
-            fill: @inactive-color;
         }
 
-        &:not(.jw-flag-touch) .jw-button-color:hover,
-        .jw-button-color:focus {
-            outline: none;
-            color: @hover-color;
-            fill: @hover-color;
+        &:not(.jw-flag-touch) .jw-button-color:not(.jw-logo-button) {
+            &:focus,
+            &:hover {
+                outline: none;
+                color: @hover-color;
+            }
         }
 
         .jw-toggle {
@@ -132,15 +127,6 @@
             color: @hover-color;
         }
 
-        /* Colors for display icons */
-        .jw-display-icon-container {
-            margin: 0 (@ui-padding * 0.5);
-
-            .jw-icon {
-                color: @display-icon-color;
-            }
-        }
-
         /* Slider colors */
         .jw-rail {
             background: @rail-color;
@@ -154,76 +140,31 @@
             background: @progress-color;
         }
 
-        .jw-slider-horizontal {
-            height: @rail-height;
-
-            .jw-rail,
-            .jw-buffer,
-            .jw-progress {
-                height: @rail-height;
-            }
-
-            .jw-knob {
-                margin-left: @thumb-size/-2;
-            }
-        }
-
-        .jw-slider-vertical {
-            .jw-knob {
-                margin-bottom: @thumb-size/-2;
-            }
-
-            .jw-slider-container,
-            .jw-rail,
-            .jw-progress {
-                width: @def-rail-width;
-            }
-        }
-
         /* Styles for menu elements, volume, slider thumbnail */
-        .jw-menu,
         .jw-time-tip,
         .jw-volume-tip {
             border: @volume-border;
         }
 
-        .jw-menu,
-        .jw-time-tip {
-            padding: @ui-padding;
-        }
-
-        .jw-volume-tip {
-            padding: @volume-padding;
+        .jw-slider-volume.jw-volume-tip.jw-background-color.jw-slider-vertical {
+            background: none;
         }
 
         .jw-skip {
             padding: @ui-padding;
+            outline: none;
 
             .jw-skiptext,
             .jw-skip-icon {
                 color: @inactive-color;
             }
 
-            &.jw-skippable:hover .jw-skip-icon,
-            &.jw-skippable:hover .jw-text {
-                color: @active-color;
+            &.jw-skippable:hover,
+            &.jw-skippable:focus {
+                .jw-skip-icon {
+                    color: @active-color;
+                }
             }
-        }
-
-        .jw-time-tip,
-        .jw-dock-button {
-            .jw-text {
-                color: @inactive-color;
-            }
-        }
-
-        /* Dock button styles */
-        .jw-dock-button {
-            background: @display-bkgd-color;
-        }
-
-        &:not(.jw-flag-touch) .jw-dock-button:hover {
-            background: @display-bkgd-hover-color;
         }
 
         /*
@@ -236,13 +177,17 @@
                 --disconnected-color: @inactive-color;
 
                 &:focus {
-                    --connected-color: @active-color;
-                    --disconnected-color: @hover-color;
+                    outline: none;
                 }
 
                 &.jw-off {
                     --connected-color: @inactive-color;
                 }
+            }
+
+            &:focus button {
+                --connected-color: @active-color;
+                --disconnected-color: @hover-color;
             }
 
             &:hover button {
@@ -260,36 +205,6 @@
         .jw-nextup {
             border-radius: @nextup-border-radius;
         }
-
-        .jw-nextup-header {
-            background: @nextup-header-background;
-            color: @nextup-header-text-color;
-        }
-
-        .jw-nextup-body {
-            background: @nextup-body-background;
-            color: @nextup-body-text-color;
-        }
-
-        .jw-nextup-thumbnail-visible + .jw-nextup-title:after {
-            background: linear-gradient(
-                -180deg,
-                fade(@nextup-body-text-color-overflow, 0%) 0%,
-                @nextup-body-text-color-overflow 100%
-            );
-        }
-
-        .jw-nextup-close {
-            color: @nextup-close-button-color-inactive;
-        }
-
-        .jw-nextup-close:active {
-            color: @nextup-close-button-color-active;
-        }
-
-        .jw-nextup-close:hover {
-            color: @nextup-close-button-color-hover;
-        }
     }
 
     .custom-skin-styles() {
@@ -297,12 +212,8 @@
             border-radius: @ui-corner-round;
         }
 
-        .jw-dock-button {
-            border-radius: @ui-corner-round;
-        }
-
         &:not(.jw-ie) {
-            .jw-controlbar .jw-controlbar-center-group .jw-text-alt {
+            .jw-controlbar .jw-text-alt {
                 top: 50%;
                 transform: translateY(-50%);
                 margin: auto;
@@ -325,12 +236,6 @@
             .jw-text-duration,
             .jw-text-countdown {
                 height: @controlbar-height;
-                line-height: @controlbar-height;
-            }
-
-            .jw-selection-menu .jw-menu-selection-text {
-                height: @controlbar-height * 1.334;
-                line-height: @controlbar-height * 1.334;
             }
         }
 
@@ -346,70 +251,25 @@
             }
 
             .jw-captions {
-                max-height: ~"calc(100% - 38px)";
+                max-height: calc(100% - 38px);
             }
 
             .jwplayer& {
                 /* captions styles code specific to native text track rendering */
                 video::-webkit-media-text-track-container {
-                    max-height: ~"calc(100% - 38px)";
-                }
-            }
-
-            .jw-controls {
-                .jw-controls-right {
-                    bottom: @controlbar-height;
-                }
-            }
-
-            &.jw-flag-audio-player {
-                .jw-controlbar {
-                    height: 100%;
-                }
-
-                .jw-icon-inline,
-                .jw-icon-tooltip,
-                .jw-text-elapsed,
-                .jw-text-duration,
-                .jw-text-countdown {
-                    height: auto;
-                    line-height: normal;
+                    max-height: calc(100% - 38px);
                 }
             }
 
             .jw-icon-inline,
             .jw-icon-tooltip {
-                min-width: @controlbar-height * 5/8;
-            }
-
-            .jw-selection-menu {
-                padding: 0 @ui-padding / 2;
+                min-width: (@controlbar-height * 5 / 8);
             }
         }
     }
 
     // Set color classes in the skin so they can be reused in other parts of the player (i.e. the related overlay)
     .set-global-color-classes() {
-        // Set the highlight color of the center display icon when we are hovering the player.
-        &.jwplayer:not(.jw-flag-touch) {
-            // When not in an error state or in a buffering state...
-            &:not(.jw-error):not(.jw-state-error):not(.jw-state-buffering) {
-                // Highlight the display icon's background when hovering the media container
-                .jw-media:hover ~ .jw-controls .jw-display-icon-display {
-                    background-color: @display-bkgd-hover-color;
-                }
-
-                // Highlight the display icon and the display icon's background
-                .jw-display-icon-container:hover {
-                    background-color: @display-bkgd-hover-color;
-
-                    .jw-icon {
-                        color: @display-icon-hover-color;
-                    }
-                }
-            }
-        }
-
         .jw-color-active {
             color: @active-color;
             stroke: @active-color;
@@ -417,7 +277,8 @@
         }
 
         &:not(.jw-flag-touch) .jw-color-active-hover {
-            &:hover {
+            &:hover,
+            &:focus {
                 color: @active-color;
                 stroke: @active-color;
                 border-color: @active-color;
@@ -452,3 +313,5 @@
         }
     }
 }
+/* stylelint-enable selector-max-id */
+

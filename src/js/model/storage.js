@@ -1,11 +1,12 @@
-import parser from 'utils/parser';
+import { serialize } from 'utils/parser';
+import ApiSettings from 'api/api-settings';
 
 let storage = {
     removeItem: function() {}
 };
 
 try {
-    storage = window.localStorage;
+    storage = window.localStorage || storage;
 } catch (e) {/* ignore */}
 
 function Storage(namespace, persistItems) {
@@ -18,7 +19,7 @@ Object.assign(Storage.prototype, {
         return this.items.reduce((memo, key) => {
             const val = storage[`${this.namespace}.${key}`];
             if (val) {
-                memo[key] = parser.serialize(val);
+                memo[key] = serialize(val);
             }
             return memo;
         }, {});
@@ -30,8 +31,7 @@ Object.assign(Storage.prototype, {
                     storage[`${this.namespace}.${key}`] = value;
                 } catch (e) {
                     // ignore QuotaExceededError unless debugging
-                    const jwplayer = window.jwplayer;
-                    if (jwplayer && jwplayer.debug) {
+                    if (ApiSettings.debug) {
                         console.error(e);
                     }
                 }

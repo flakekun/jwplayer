@@ -1,12 +1,10 @@
-@import "../../shared-imports/vars";
-
 .jw-captions {
     position: absolute;
     width: 100%;
     height: 100%;
     text-align: center;
     display: none;
-    max-height: ~"calc(100% - 40px)";
+    max-height: calc(100% - 60px);
     letter-spacing: normal;
     word-spacing: normal;
     text-transform: none;
@@ -60,11 +58,13 @@
     video {
         /* Normalize the coordinate system to uniformly adjust the container height when the control bar is visible */
         &::-webkit-media-controls {
+            display: none;
             justify-content: flex-start;
         }
 
+        /* captions styles code specific to native text track rendering */
         &::-webkit-media-text-track-container {
-            max-height: ~"calc(100% - 40px)";
+            max-height: calc(100% - 60px);
             line-height: normal;
         }
 

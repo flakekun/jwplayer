@@ -1,48 +1,41 @@
+import sinon from 'sinon';
 import SimpleModel from 'model/simplemodel';
 
-const sinon = require('sinon');
+describe('SimpleModel Mixin', function() {
 
-define([
-    'utils/underscore'
-], function (_) {
+    const model = Object.assign({}, SimpleModel);
 
-    describe('SimpleModel Mixin', function() {
+    it('returns undefined ', function() {
+        expect(model.get('noExisting'), 'get with no attributes').to.be.undefined;
+    });
 
-        const model = _.extend({}, SimpleModel);
+    it('simplemodel', function() {
+        expect(model.get('noExisting'), 'get with no attributes').to.be.undefined;
 
-        it('returns undefined ', function() {
-            assert.isNotOk(model.get('noExisting'), 'get with no attributes');
-        });
+        model.set('attr', 'val');
+        expect(model.get('attr'), 'set attribute with value').to.equal('val');
 
-        it('simplemodel', function() {
-            assert.isNotOk(model.get('noExisting'), 'get with no attributes');
+        const clone = model.clone();
+        expect(clone.attr, 'clone gets the same attributes').to.equal('val');
 
-            model.set('attr', 'val');
-            assert.equal(model.get('attr'), 'val', 'set attribute with value');
+        const spy = sinon.spy();
+        model.change('attr', spy);
+        expect(spy.callCount, 'change callback is invoked').to.equal(1);
+        expect(spy.lastCall.args[1], 'change attribute with value').to.equal('val');
+    });
 
-            const clone = model.clone();
-            assert.equal(clone.attr, 'val', 'clone gets the same attributes');
+    it('simplemodel', function() {
+        expect(model.get('noExisting'), 'get with no attributes').to.be.undefined;
 
-            const spy = sinon.spy();
-            model.change('attr', spy);
-            assert.equal(spy.callCount, 1, 'change callback is invoked');
-            assert.equal(spy.lastCall.args[1], 'val', 'change attribute with value');
-        });
+        model.set('attr', 'val');
+        expect(model.get('attr'), 'set attribute with value').to.equal('val');
 
-        it('simplemodel', function() {
-            assert.isNotOk(model.get('noExisting'), 'get with no attributes');
+        const clone = model.clone();
+        expect(clone.attr, 'clone gets the same attributes').to.equal('val');
 
-            model.set('attr', 'val');
-            assert.equal(model.get('attr'), 'val', 'set attribute with value');
-
-            const clone = model.clone();
-            assert.equal(clone.attr, 'val', 'clone gets the same attributes');
-
-            const spy = sinon.spy();
-            model.change('attr', spy);
-            assert.equal(spy.callCount, 1, 'change callback is invoked');
-            assert.equal(spy.lastCall.args[1], 'val', 'change attribute with value');
-        });
-
+        const spy = sinon.spy();
+        model.change('attr', spy);
+        expect(spy.callCount, 'change callback is invoked').to.equal(1);
+        expect(spy.lastCall.args[1], 'change attribute with value').to.equal('val');
     });
 });

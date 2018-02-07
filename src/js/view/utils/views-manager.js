@@ -2,13 +2,14 @@ import activeTab from 'utils/active-tab';
 import { requestAnimationFrame, cancelAnimationFrame } from 'utils/request-animation-frame';
 
 const views = [];
+const observed = {};
 
 let intersectionObserver;
 let responsiveRepaintRequestId = -1;
 
 function lazyInitIntersectionObserver() {
     const IntersectionObserver = window.IntersectionObserver;
-    if (window.IntersectionObserver && !intersectionObserver) {
+    if (!intersectionObserver) {
         // Fire the callback every time 25% of the player comes in/out of view
         intersectionObserver = new IntersectionObserver((entries) => {
             if (entries && entries.length) {
@@ -77,13 +78,17 @@ export default {
     },
     observe(container) {
         lazyInitIntersectionObserver();
-        try {
-            intersectionObserver.unobserve(container);
-        } catch (e) {/* catch Exception thrown by Edge 15 browser */}
+
+        if (observed[container.id]) {
+            return;
+        }
+
+        observed[container.id] = true;
         intersectionObserver.observe(container);
     },
     unobserve(container) {
-        if (intersectionObserver) {
+        if (intersectionObserver && observed[container.id]) {
+            delete observed[container.id];
             intersectionObserver.unobserve(container);
         }
     }

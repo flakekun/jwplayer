@@ -1,11 +1,8 @@
 language: node_js
 node_js:
-  - 8
-  - 5
+  - 9
 
-before_install:
-  - npm install -g npm
-  - npm config set loglevel warn
+cache: yarn
 
 before_script:
   - npm install -g grunt-cli
